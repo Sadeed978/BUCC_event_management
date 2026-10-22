@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link              from "next/link";
+import { usePathname }   from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 import {
   MdDashboard,
   MdEvent,
-  MdPeople,
   MdGroups,
   MdAccountBalance,
   MdCalendarMonth,
@@ -27,19 +27,19 @@ const navGroups = [
   {
     label: "MAIN",
     items: [
-      { label: "Dashboard",   href: "/",          icon: MdDashboard },
-      { label: "Semesters",   href: "/semesters", icon: MdCalendarMonth },
-      { label: "Analytics",   href: "/analytics", icon: MdBarChart },
-      { label: "Search",      href: "/search",    icon: MdSearch },
+      { label: "Dashboard",     href: "/",              icon: MdDashboard },
+      { label: "Semesters",     href: "/semesters",     icon: MdCalendarMonth },
+      { label: "Analytics",     href: "/analytics",     icon: MdBarChart },
+      { label: "Search",        href: "/search",        icon: MdSearch },
       { label: "Notifications", href: "/notifications", icon: MdNotifications },
     ],
   },
   {
     label: "MEMBERS",
     items: [
-      { label: "Panel Member Info",    href: "/members",    icon: MdPersonOutline },
-      { label: "Senior Executive Info",href: "/committees", icon: MdGroups },
-      { label: "Alumni Archive",       href: "/alumni",     icon: MdSchool },
+      { label: "Panel Member Info",     href: "/members",    icon: MdPersonOutline },
+      { label: "Senior Executive Info", href: "/committees", icon: MdGroups },
+      { label: "Alumni Archive",        href: "/alumni",     icon: MdSchool },
     ],
   },
   {
@@ -56,10 +56,26 @@ const navGroups = [
   },
 ];
 
+/** Returns the user's initials (up to 2 chars) for the avatar */
+function initials(name: string | null | undefined): string {
+  if (!name) return "?";
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
 export default function Sidebar() {
-  const pathname = usePathname();
+  const pathname        = usePathname();
+  const { data: session } = useSession();
   const [mounted, setMounted] = useState(false);
+
   useEffect(() => { setMounted(true); }, []);
+
+  const userName = session?.user?.name  ?? "—";
+  const userRole = session?.user?.role  ?? "";
 
   return (
     <aside className="flex flex-col shrink-0 w-56 h-screen bg-[#1a3353] overflow-hidden">
@@ -79,11 +95,15 @@ export default function Sidebar() {
       {/* User */}
       <div className="flex items-center gap-3 px-4 py-4 border-b border-white/10">
         <div className="w-8 h-8 rounded-full bg-[#234571] border border-white/20 flex items-center justify-center text-xs font-bold text-white shrink-0">
-          SA
+          {mounted ? initials(userName) : "—"}
         </div>
         <div className="overflow-hidden">
-          <p className="text-sm font-medium text-white truncate">Sadeed Ahmed</p>
-          <p className="text-[10px] text-blue-300 truncate">Admin</p>
+          <p className="text-sm font-medium text-white truncate">
+            {mounted ? userName : "Loading…"}
+          </p>
+          <p className="text-[10px] text-blue-300 truncate">
+            {mounted ? userRole : ""}
+          </p>
         </div>
       </div>
 
@@ -121,7 +141,10 @@ export default function Sidebar() {
 
       {/* Logout */}
       <div className="px-3 pb-4 border-t border-white/10 pt-3">
-        <button className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-sm text-blue-200/80 hover:bg-white/10 hover:text-white transition-colors">
+        <button
+          onClick={() => signOut({ callbackUrl: "/login" })}
+          className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-sm text-blue-200/80 hover:bg-white/10 hover:text-white transition-colors"
+        >
           <MdLogout size={16} />
           <span>Logout</span>
         </button>

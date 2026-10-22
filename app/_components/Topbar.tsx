@@ -2,33 +2,36 @@
 
 import { MdSearch, MdNotifications, MdAddCircleOutline } from "react-icons/md";
 import { usePathname } from "next/navigation";
-import Link from "next/link";
+import { useSession }  from "next-auth/react";
+import Link            from "next/link";
 import { useState, useEffect } from "react";
 
 const pageTitles: Record<string, string> = {
-  "/":             "Dashboard",
-  "/semesters":    "Semester Management",
-  "/events":       "Event Management",
-  "/financial":    "Financial Management",
-  "/committees":   "Committee Management",
-  "/members":      "Member Database",
-  "/sponsors":     "Sponsor CRM",
-  "/vendors":      "Vendor CRM",
-  "/documents":    "Document Repository",
-  "/handover":     "Handover System",
-  "/alumni":       "Alumni Archive",
-  "/analytics":    "Analytics",
-  "/notifications":"Notifications",
-  "/search":       "Search Center",
-  "/admin":        "System Administration",
+  "/":              "Dashboard",
+  "/semesters":     "Semester Management",
+  "/events":        "Event Management",
+  "/financial":     "Financial Management",
+  "/committees":    "Committee Management",
+  "/members":       "Member Database",
+  "/sponsors":      "Sponsor CRM",
+  "/vendors":       "Vendor CRM",
+  "/documents":     "Document Repository",
+  "/handover":      "Handover System",
+  "/alumni":        "Alumni Archive",
+  "/analytics":     "Analytics",
+  "/notifications": "Notifications",
+  "/search":        "Search Center",
+  "/admin":         "System Administration",
 };
 
 export default function Topbar() {
-  const pathname = usePathname();
+  const pathname          = usePathname();
+  const { data: session } = useSession();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
-  const title = mounted ? (pageTitles[pathname] ?? "BUCC OS") : "Dashboard";
+  const title    = mounted ? (pageTitles[pathname] ?? "BUCC OS") : "Dashboard";
+  const userRole = mounted ? (session?.user?.role ?? "") : "";
 
   return (
     <header className="h-14 shrink-0 flex items-center justify-between px-6 bg-white border-b border-[#e2e8f0]">
@@ -45,7 +48,7 @@ export default function Topbar() {
           <kbd className="ml-1 text-[10px] px-1 py-0.5 rounded bg-[#e2e8f0]">⌘K</kbd>
         </Link>
 
-        {/* Semester badge */}
+        {/* Semester badge — static until semesters API is wired to context */}
         <div className="px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium">
           Spring 2027
         </div>
@@ -60,16 +63,21 @@ export default function Topbar() {
           <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#1a3353]" />
         </Link>
 
-        {/* Role badge */}
-        <div className="px-3 py-1.5 rounded-lg bg-[#1a3353] text-white text-xs font-medium">
-          Admin
-        </div>
+        {/* Role badge — live from session */}
+        {userRole && (
+          <div className="px-3 py-1.5 rounded-lg bg-[#1a3353] text-white text-xs font-medium">
+            {userRole}
+          </div>
+        )}
 
         {/* Quick add */}
-        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1a3353] text-white text-xs font-medium hover:bg-[#142843] transition-colors">
+        <Link
+          href="/events"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1a3353] text-white text-xs font-medium hover:bg-[#142843] transition-colors"
+        >
           <MdAddCircleOutline size={14} />
           <span className="hidden sm:inline">New Event</span>
-        </button>
+        </Link>
       </div>
     </header>
   );

@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+  /* ── BUCC Dashboard tokens ─────────────────────────────────────── */
   --color-navy:        #1a3353;
   --color-navy-dark:   #142843;
   --color-navy-light:  #1e3d63;
@@ -13,14 +14,42 @@
   --color-text-muted:  #64748b;
   --color-active-bg:   #e8eef6;
   --color-active-text: #1a3353;
+
+  /* ── Eventora tokens ───────────────────────────────────────────── */
+  --color-eventora-bg:      #fafaf8;
+  --color-eventora-accent:  #7c3aed; /* violet-700 */
+  --color-eventora-accent2: #6d28d9; /* violet-800 */
 }
 
 html {
   scroll-behavior: smooth;
 }
 
-/* Custom scrollbar */
+/* ── Scrollbar ───────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: #f1f5f9; }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #1a3353; }
+
+/* ── Eventora helpers ────────────────────────────────────────────── */
+.eventora-gradient {
+  background: radial-gradient(ellipse at 30% 50%, #ede9fe 0%, #fafaf8 60%);
+}
+
+.eventora-hero-gradient {
+  background: linear-gradient(135deg, #0f0724 0%, #1e0a4a 40%, #2d1060 100%);
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

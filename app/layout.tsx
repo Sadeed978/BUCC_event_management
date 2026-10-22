@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import SessionProviderWrapper from "@/app/_components/SessionProviderWrapper";
+import { AuthProvider }       from "@/components/auth/AuthProvider";
+import { Toaster }            from "sonner";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -8,8 +11,13 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "BRACU Computer Club — Event Management",
-  description: "BRAC University Computer Club · Event Management Portal — Members Only",
+  title: {
+    default: "Eventora — Discover Extraordinary Events",
+    template: "%s | Eventora",
+  },
+  description:
+    "Eventora is a modern event discovery platform. Find tech summits, music festivals, business conferences, and more — or publish your own event.",
+  keywords: ["events", "event discovery", "tech events", "music events", "Bangladesh events"],
 };
 
 export default function RootLayout({
@@ -24,10 +32,17 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body
-        className="min-h-full bg-[#f4f6f9] text-[#1e293b] font-[family-name:var(--font-inter)] antialiased"
+        className="min-h-full bg-[#fafaf8] text-[#1e293b] font-[family-name:var(--font-inter)] antialiased"
         suppressHydrationWarning
       >
-        {children}
+        {/* Firebase auth context for Eventora */}
+        <AuthProvider>
+          {/* NextAuth session context for BUCC dashboard */}
+          <SessionProviderWrapper>
+            {children}
+          </SessionProviderWrapper>
+          <Toaster position="top-right" richColors closeButton />
+        </AuthProvider>
       </body>
     </html>
   );

@@ -23,6 +23,14 @@ export function notFound(error = "Not found"): NextResponse {
   return NextResponse.json({ success: false, error }, { status: 404 });
 }
 
+export function unauthorized(error = "Unauthorized"): NextResponse {
+  return NextResponse.json({ success: false, error }, { status: 401 });
+}
+
+export function forbidden(error = "Forbidden"): NextResponse {
+  return NextResponse.json({ success: false, error }, { status: 403 });
+}
+
 export function serverError(error: unknown): NextResponse {
   const msg = error instanceof Error ? error.message : "Internal server error";
   console.error("[API Error]", error);

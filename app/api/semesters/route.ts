@@ -1,11 +1,16 @@
-import { getDb } from "@/lib/db";
+import { getDb }          from "@/lib/db";
 import { SemesterSchema } from "@/lib/schemas";
 import { ok, created, badRequest, serverError } from "@/lib/response";
-import { writeAuditLog } from "@/lib/audit";
+import { writeAuditLog }  from "@/lib/audit";
+import { requireSession } from "@/lib/apiAuth";
+import { NextResponse }   from "next/server";
 
 export async function GET() {
   try {
-    const db = await getDb();
+    const auth = await requireSession();
+    if (auth instanceof NextResponse) return auth;
+
+    const db        = await getDb();
     const semesters = await db
       .collection("semesters")
       .find({})
@@ -19,12 +24,15 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const auth = await requireSession();
+    if (auth instanceof NextResponse) return auth;
+
+    const body   = await request.json();
     const parsed = SemesterSchema.safeParse(body);
     if (!parsed.success) return badRequest(parsed.error.message);
 
     const now = new Date().toISOString();
-    const db = await getDb();
+    const db  = await getDb();
 
     // Only one semester can be active at a time
     if (parsed.data.status === "active") {
@@ -33,16 +41,16 @@ export async function POST(request: Request) {
         .updateMany({ status: "active" }, { $set: { status: "completed", updatedAt: now } });
     }
 
-    const doc = { ...parsed.data, createdAt: now, updatedAt: now };
+    const doc    = { ...parsed.data, createdAt: now, updatedAt: now };
     const result = await db.collection("semesters").insertOne(doc);
 
     await writeAuditLog({
-      action: "Created Semester",
-      detail: parsed.data.name,
-      performedBy: "system",
-      risk: "low",
-      collection: "semesters",
-      documentId: result.insertedId.toString(),
+      action:      "Created Semester",
+      detail:      parsed.data.name,
+      performedBy: auth.user.email ?? "system",
+      risk:        "low",
+      collection:  "semesters",
+      documentId:  result.insertedId.toString(),
     });
 
     return created({ _id: result.insertedId, ...doc });
