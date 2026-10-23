@@ -4,47 +4,79 @@ import { Zap } from "lucide-react";
 import EventoraLoginForm from "@/app/login/_components/EventoraLoginForm";
 
 export const metadata: Metadata = {
-  title: "Log In",
-  description: "Sign in to your Eventora account to manage and publish events.",
+  title: "Log In — Eventora",
+  description:
+    "Sign in to Eventora to discover, manage, and share amazing events.",
 };
 
 export default function LoginPage() {
   return (
-    <div
-      className="min-h-screen flex items-center justify-center px-4 py-12"
-      style={{ background: "linear-gradient(135deg, #0f0724 0%, #1e0a4a 50%, #2d1060 100%)" }}
+    <div className="relative min-h-screen overflow-hidden flex items-center justify-center px-4 py-16"
+      style={{ background: "linear-gradient(135deg, #0a0118 0%, #150636 35%, #1e0a4a 65%, #2d1060 100%)" }}
     >
-      {/* Ambient glow */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-96 h-64 bg-violet-600/20 rounded-full blur-3xl pointer-events-none" />
+      {/* Decorative blobs */}
+      <div className="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-violet-700/25 blur-[100px]" />
+      <div className="pointer-events-none absolute -bottom-32 -right-24 h-80 w-80 rounded-full bg-purple-500/20 blur-[100px]" />
+      <div className="pointer-events-none absolute top-1/2 left-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/10 blur-[80px]" />
 
-      <div className="relative w-full max-w-sm">
-        <div className="bg-white rounded-2xl shadow-2xl px-8 py-10">
+      {/* Subtle grid overlay */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+        }}
+      />
 
-          {/* Logo */}
-          <div className="flex flex-col items-center mb-7">
-            <Link href="/" className="flex items-center gap-2 mb-5">
-              <div className="w-9 h-9 rounded-xl bg-violet-600 flex items-center justify-center">
-                <Zap size={17} className="text-white" strokeWidth={2.5} />
-              </div>
-              <span className="font-bold text-lg text-slate-900">Eventora</span>
-            </Link>
-            <h1 className="text-xl font-extrabold text-slate-900">Welcome back</h1>
-            <p className="text-sm text-slate-500 mt-1">Sign in to your account</p>
+      <div className="relative z-10 w-full max-w-md">
+
+        {/* Card */}
+        <div className="overflow-hidden rounded-3xl bg-white/[0.97] shadow-[0_32px_80px_rgba(0,0,0,0.45)] ring-1 ring-white/10 backdrop-blur-xl">
+
+          {/* Top accent bar */}
+          <div className="h-1 w-full bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500" />
+
+          <div className="px-8 pb-10 pt-9 sm:px-10">
+
+            {/* Logo */}
+            <div className="mb-8 flex flex-col items-center gap-1">
+              <Link href="/" className="group mb-4 flex items-center gap-2.5">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-purple-700 shadow-lg shadow-violet-900/40 transition-transform group-hover:scale-105">
+                  <Zap size={19} className="text-white" strokeWidth={2.5} />
+                </div>
+                <span className="text-2xl font-extrabold tracking-tight text-slate-900">
+                  Eventora
+                </span>
+              </Link>
+
+              <h1 className="text-2xl font-extrabold text-slate-900">
+                Welcome back!
+              </h1>
+              <p className="mt-1 text-center text-sm leading-relaxed text-slate-500">
+                Log in to discover, manage, and share amazing events.
+              </p>
+            </div>
+
+            {/* Form */}
+            <EventoraLoginForm />
+
+            {/* Register link */}
+            <p className="mt-6 text-center text-sm text-slate-500">
+              Don&apos;t have an account?{" "}
+              <Link
+                href="/register"
+                className="font-semibold text-violet-700 transition-colors hover:text-violet-900 focus-visible:outline-none focus-visible:underline"
+              >
+                Create one
+              </Link>
+            </p>
           </div>
-
-          <EventoraLoginForm />
-
-          <p className="text-center text-sm text-slate-500 mt-5">
-            Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-violet-700 font-semibold hover:text-violet-900 transition-colors">
-              Register
-            </Link>
-          </p>
         </div>
 
-        <p className="text-center text-xs text-violet-300/50 mt-5">
-          BUCC Dashboard members:{" "}
-          <span className="text-violet-200/60">use your club credentials above</span>
+        {/* Footer note */}
+        <p className="mt-5 text-center text-xs text-violet-300/40">
+          Your data is protected by Firebase Authentication.
         </p>
       </div>
     </div>
