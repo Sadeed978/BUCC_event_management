@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     await writeAuditLog({
       action:      `Transaction: ${parsed.data.type}`,
       detail:      `${parsed.data.description} — ৳${parsed.data.amount}`,
-      performedBy: auth.user.email ?? parsed.data.createdBy,
+      performedBy: auth.user?.email ?? parsed.data.createdBy,
       risk:        "low",
       collection:  "transactions",
       documentId:  result.insertedId.toString(),

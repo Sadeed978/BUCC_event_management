@@ -1,8 +1,7 @@
 "use client";
 
-import Link              from "next/link";
-import { usePathname }   from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   MdDashboard,
   MdEvent,
@@ -22,36 +21,38 @@ import {
   MdPersonOutline,
 } from "react-icons/md";
 import { useState, useEffect } from "react";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 const navGroups = [
   {
     label: "MAIN",
     items: [
-      { label: "Dashboard",     href: "/",              icon: MdDashboard },
-      { label: "Semesters",     href: "/semesters",     icon: MdCalendarMonth },
-      { label: "Analytics",     href: "/analytics",     icon: MdBarChart },
-      { label: "Search",        href: "/search",        icon: MdSearch },
+      { label: "Dashboard", href: "/", icon: MdDashboard },
+      { label: "Semesters", href: "/semesters", icon: MdCalendarMonth },
+      { label: "Analytics", href: "/analytics", icon: MdBarChart },
+      { label: "Search", href: "/search", icon: MdSearch },
       { label: "Notifications", href: "/notifications", icon: MdNotifications },
     ],
   },
   {
     label: "MEMBERS",
     items: [
-      { label: "Panel Member Info",     href: "/members",    icon: MdPersonOutline },
+      { label: "Panel Member Info", href: "/members", icon: MdPersonOutline },
       { label: "Senior Executive Info", href: "/committees", icon: MdGroups },
-      { label: "Alumni Archive",        href: "/alumni",     icon: MdSchool },
+      { label: "Alumni Archive", href: "/alumni", icon: MdSchool },
     ],
   },
   {
     label: "EVENTS",
     items: [
-      { label: "Event Control Center", href: "/events",    icon: MdEvent },
-      { label: "Financial",            href: "/financial", icon: MdAccountBalance },
-      { label: "Sponsors",             href: "/sponsors",  icon: MdHandshake },
-      { label: "Vendors",              href: "/vendors",   icon: MdStorefront },
-      { label: "Documents",            href: "/documents", icon: MdFolder },
-      { label: "Handover",             href: "/handover",  icon: MdSwapHoriz },
-      { label: "Admin Panel",          href: "/admin",     icon: MdAdminPanelSettings },
+      { label: "Event Control Center", href: "/events", icon: MdEvent },
+      { label: "Financial", href: "/financial", icon: MdAccountBalance },
+      { label: "Sponsors", href: "/sponsors", icon: MdHandshake },
+      { label: "Vendors", href: "/vendors", icon: MdStorefront },
+      { label: "Documents", href: "/documents", icon: MdFolder },
+      { label: "Handover", href: "/handover", icon: MdSwapHoriz },
+      { label: "Admin Panel", href: "/admin", icon: MdAdminPanelSettings },
     ],
   },
 ];
@@ -68,14 +69,24 @@ function initials(name: string | null | undefined): string {
 }
 
 export default function Sidebar() {
-  const pathname        = usePathname();
-  const { data: session } = useSession();
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
+  const [userName, setUserName] = useState("—");
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
 
-  const userName = session?.user?.name  ?? "—";
-  const userRole = session?.user?.role  ?? "";
+    if (auth.currentUser) {
+      setUserName(auth.currentUser.displayName || auth.currentUser.email || "—");
+    }
+  }, []);
+
+  const userRole = "";
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    window.location.href = "/login";
+  };
 
   return (
     <aside className="flex flex-col shrink-0 w-56 h-screen bg-[#1a3353] overflow-hidden">
@@ -117,6 +128,7 @@ export default function Sidebar() {
             <div className="space-y-0.5">
               {group.items.map(({ label, href, icon: Icon }) => {
                 const active = mounted && pathname === href;
+
                 return (
                   <Link
                     key={href}
@@ -142,7 +154,7 @@ export default function Sidebar() {
       {/* Logout */}
       <div className="px-3 pb-4 border-t border-white/10 pt-3">
         <button
-          onClick={() => signOut({ callbackUrl: "/login" })}
+          onClick={handleLogout}
           className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-sm text-blue-200/80 hover:bg-white/10 hover:text-white transition-colors"
         >
           <MdLogout size={16} />

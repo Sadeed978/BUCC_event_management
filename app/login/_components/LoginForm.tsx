@@ -1,35 +1,21 @@
 "use client";
 
 /**
- * LoginForm — handles both the credential sign-in flow and displays
- * server-returned error messages from NextAuth.
+ * LoginForm — Firebase email/password sign-in.
  */
 
 import { useState, type FormEvent } from "react";
-import { signIn }                   from "next-auth/react";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter, useSearchParams } from "next/navigation";
-
-// Map NextAuth error codes to user-friendly messages
-const ERROR_MESSAGES: Record<string, string> = {
-  CredentialsSignin:  "Invalid email or password.",
-  OAuthSignin:        "Could not connect to the sign-in service.",
-  OAuthCallback:      "Authentication callback failed.",
-  OAuthCreateAccount: "Could not create account via OAuth.",
-  default:            "Something went wrong. Please try again.",
-};
+import { auth } from "@/lib/firebase";
 
 export default function LoginForm() {
-  const router       = useRouter();
+  const router = useRouter();
   const searchParams = useSearchParams();
 
-  // NextAuth redirects back with ?error=<code> on failure
-  const urlError = searchParams.get("error");
-
-  const [email,    setEmail]    = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error,    setError]    = useState<string | null>(
-    urlError ? (ERROR_MESSAGES[urlError] ?? ERROR_MESSAGES.default) : null
-  );
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -42,23 +28,41 @@ export default function LoginForm() {
     }
 
     setLoading(true);
-    try {
-      const result = await signIn("credentials", {
-        email:    email.trim().toLowerCase(),
-        password,
-        redirect: false, // handle redirect ourselves for better UX
-      });
 
-      if (result?.error) {
-        setError(ERROR_MESSAGES[result.error] ?? ERROR_MESSAGES.default);
-      } else {
-        // Redirect to the originally requested page or dashboard root
-        const callbackUrl = searchParams.get("callbackUrl") ?? "/";
-        router.push(callbackUrl);
-        router.refresh(); // flush server component cache so session is visible
+    try {
+      await signInWithEmailAndPassword(
+        auth,
+        email.trim().toLowerCase(),
+        password
+      );
+
+      const callbackUrl = searchParams.get("callbackUrl") ?? "/";
+
+      router.push(callbackUrl);
+      router.refresh();
+    } catch (error: unknown) {
+      const firebaseError = error as { code?: string };
+
+      switch (firebaseError.code) {
+        case "auth/invalid-credential":
+        case "auth/invalid-email":
+        case "auth/wrong-password":
+        case "auth/user-not-found":
+          setError("Invalid email or password.");
+          break;
+
+        case "auth/user-disabled":
+          setError("This account has been disabled.");
+          break;
+
+        case "auth/too-many-requests":
+          setError("Too many failed attempts. Please try again later.");
+          break;
+
+        default:
+          setError("Something went wrong. Please try again.");
+          break;
       }
-    } catch {
-      setError(ERROR_MESSAGES.default);
     } finally {
       setLoading(false);
     }
@@ -157,14 +161,13 @@ export default function LoginForm() {
         <div className="flex-1 h-px bg-[#e2e8f0]" />
       </div>
 
-      {/* Google — disabled until OAuth app credentials are configured */}
+      {/* Google */}
       <button
         type="button"
         disabled
         title="Google sign-in coming soon"
         className="w-full flex items-center justify-center gap-3 py-3 rounded-xl border border-[#e2e8f0] text-sm font-medium text-[#94a3b8] cursor-not-allowed opacity-50"
       >
-        {/* Google "G" SVG */}
         <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
           <path
             fill="#EA4335"

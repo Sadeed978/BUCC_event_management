@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     await writeAuditLog({
       action:      "Added Sponsor",
       detail:      parsed.data.companyName,
-      performedBy: auth.user.email ?? "system",
+      performedBy: auth.user?.email ?? "system",
       risk:        "low",
       collection:  "sponsors",
       documentId:  result.insertedId.toString(),

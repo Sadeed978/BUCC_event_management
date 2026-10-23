@@ -2,8 +2,7 @@
 
 import { MdSearch, MdNotifications, MdAddCircleOutline } from "react-icons/md";
 import { usePathname } from "next/navigation";
-import { useSession }  from "next-auth/react";
-import Link            from "next/link";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 
 const pageTitles: Record<string, string> = {
@@ -25,13 +24,14 @@ const pageTitles: Record<string, string> = {
 };
 
 export default function Topbar() {
-  const pathname          = usePathname();
-  const { data: session } = useSession();
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
 
-  const title    = mounted ? (pageTitles[pathname] ?? "BUCC OS") : "Dashboard";
-  const userRole = mounted ? (session?.user?.role ?? "") : "";
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const title = mounted ? (pageTitles[pathname] ?? "BUCC OS") : "Dashboard";
 
   return (
     <header className="h-14 shrink-0 flex items-center justify-between px-6 bg-white border-b border-[#e2e8f0]">
@@ -48,7 +48,7 @@ export default function Topbar() {
           <kbd className="ml-1 text-[10px] px-1 py-0.5 rounded bg-[#e2e8f0]">⌘K</kbd>
         </Link>
 
-        {/* Semester badge — static until semesters API is wired to context */}
+        {/* Semester badge */}
         <div className="px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium">
           Spring 2027
         </div>
@@ -62,13 +62,6 @@ export default function Topbar() {
           <MdNotifications size={18} />
           <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#1a3353]" />
         </Link>
-
-        {/* Role badge — live from session */}
-        {userRole && (
-          <div className="px-3 py-1.5 rounded-lg bg-[#1a3353] text-white text-xs font-medium">
-            {userRole}
-          </div>
-        )}
 
         {/* Quick add */}
         <Link

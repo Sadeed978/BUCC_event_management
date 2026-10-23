@@ -56,7 +56,7 @@ export async function POST(request: Request) {
     await writeAuditLog({
       action:      "Added Member",
       detail:      `${parsed.data.name} (${parsed.data.studentId})`,
-      performedBy: auth.user.email ?? "system",
+      performedBy: auth.user?.email ?? "system",
       risk:        "low",
       collection:  "members",
       documentId:  result.insertedId.toString(),

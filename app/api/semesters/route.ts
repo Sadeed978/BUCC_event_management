@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     await writeAuditLog({
       action:      "Created Semester",
       detail:      parsed.data.name,
-      performedBy: auth.user.email ?? "system",
+      performedBy: auth.user?.email ?? "system",
       risk:        "low",
       collection:  "semesters",
       documentId:  result.insertedId.toString(),

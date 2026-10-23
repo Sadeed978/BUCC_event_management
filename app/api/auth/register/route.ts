@@ -33,7 +33,7 @@ export async function POST(request: Request) {
 
     const parsed = UserRegisterSchema.safeParse(body);
     if (!parsed.success) {
-      return badRequest(parsed.error.errors.map((e) => e.message).join("; "));
+      return badRequest(parsed.error.issues.map((e) => e.message).join("; "));
     }
 
     const { name, email, password, role, studentId } = parsed.data;

@@ -1,4 +1,6 @@
+
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Link from "next/link";
 import { Zap } from "lucide-react";
 import EventoraLoginForm from "@/app/login/_components/EventoraLoginForm";
@@ -11,8 +13,12 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="relative min-h-screen overflow-hidden flex items-center justify-center px-4 py-16"
-      style={{ background: "linear-gradient(135deg, #0a0118 0%, #150636 35%, #1e0a4a 65%, #2d1060 100%)" }}
+    <div
+      className="relative min-h-screen overflow-hidden flex items-center justify-center px-4 py-16"
+      style={{
+        background:
+          "linear-gradient(135deg, #0a0118 0%, #150636 35%, #1e0a4a 65%, #2d1060 100%)",
+      }}
     >
       {/* Decorative blobs */}
       <div className="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-violet-700/25 blur-[100px]" />
@@ -30,21 +36,23 @@ export default function LoginPage() {
       />
 
       <div className="relative z-10 w-full max-w-md">
-
         {/* Card */}
         <div className="overflow-hidden rounded-3xl bg-white/[0.97] shadow-[0_32px_80px_rgba(0,0,0,0.45)] ring-1 ring-white/10 backdrop-blur-xl">
-
           {/* Top accent bar */}
           <div className="h-1 w-full bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500" />
 
           <div className="px-8 pb-10 pt-9 sm:px-10">
-
             {/* Logo */}
             <div className="mb-8 flex flex-col items-center gap-1">
               <Link href="/" className="group mb-4 flex items-center gap-2.5">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-purple-700 shadow-lg shadow-violet-900/40 transition-transform group-hover:scale-105">
-                  <Zap size={19} className="text-white" strokeWidth={2.5} />
+                  <Zap
+                    size={19}
+                    className="text-white"
+                    strokeWidth={2.5}
+                  />
                 </div>
+
                 <span className="text-2xl font-extrabold tracking-tight text-slate-900">
                   Eventora
                 </span>
@@ -53,13 +61,16 @@ export default function LoginPage() {
               <h1 className="text-2xl font-extrabold text-slate-900">
                 Welcome back!
               </h1>
+
               <p className="mt-1 text-center text-sm leading-relaxed text-slate-500">
                 Log in to discover, manage, and share amazing events.
               </p>
             </div>
 
             {/* Form */}
-            <EventoraLoginForm />
+            <Suspense fallback={null}>
+              <EventoraLoginForm />
+            </Suspense>
 
             {/* Register link */}
             <p className="mt-6 text-center text-sm text-slate-500">
